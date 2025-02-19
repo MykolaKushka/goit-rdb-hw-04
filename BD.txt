@@ -1,0 +1,218 @@
+Тема 3. ДЗ
+
+1p.
+
+SELECT * 
+FROM mydb.products;
+
+SELECT name, phone 
+FROM mydb.shippers;
+
+2p. 
+SELECT AVG(price) AS average_price, MAX(price) AS max_price, MIN(price) AS min_price 
+FROM mydb.products;
+
+3p. 
+SELECT DISTINCT category_id, price 
+FROM mydb.products
+ORDER BY price DESC
+LIMIT 10;
+
+4p. 
+SELECT COUNT(*)
+FROM mydb.products
+WHERE price > 20 AND price < 100
+
+5p. 
+SELECT supplier_id, COUNT(*) AS product_count, AVG(price) AS avarage_price
+FROM mydb.products
+GROUP BY supplier_id
+
+_____________________________
+
+Тема 4. ДЗ 
+
+1.
+a) 
+CREATE DATABASE LibraryManagement;
+
+b) 
+CREATE TABLE librarymanagement.authors (
+  author_id INT AUTO_INCREMENT PRIMARY KEY,
+  author_name VARCHAR(50)
+);
+
+c) 
+CREATE TABLE librarymanagement.genres (
+  genre_id INT AUTO_INCREMENT PRIMARY KEY,
+  genre_name VARCHAR(50)
+);
+
+d) 
+CREATE TABLE librarymanagement.books (
+  book_id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(250),
+  publication_year INT,
+  author_id INT,
+  genre_id INT,
+  FOREIGN KEY (author_id) REFERENCES librarymanagement.authors(author_id),
+  FOREIGN KEY (genre_id) REFERENCES librarymanagement.genres(genre_id)
+);
+
+e) 
+CREATE TABLE librarymanagement.users (
+  user_id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50),
+  email VARCHAR(50)
+);
+
+f) 
+CREATE TABLE librarymanagement.borrowed_books (
+  borrow_id INT AUTO_INCREMENT PRIMARY KEY,
+  book_id INT,
+  user_id INT,
+  borrow_date DATE,
+  return_date DATE,
+  FOREIGN KEY (book_id) REFERENCES librarymanagement.books(book_id),
+  FOREIGN KEY (user_id) REFERENCES librarymanagement.users(user_id)
+);
+
+2. 
+a)
+INSERT INTO librarymanagement.authors (author_name)
+VALUES 
+    ("Джордж Байрон"),
+    ("Вільям Шекспір"),
+    ("Марк Твен");
+
+
+b)
+INSERT INTO librarymanagement.genres (genre_name)
+VALUES  
+    ("Романтизм"), 
+    ("Драма"), 
+    ("Сатира"); 
+c)
+INSERT INTO librarymanagement.books (title, publication_year, author_id, genre_id)
+VALUES  
+    ("Паломництво Чайльд Гарольда", 1812, 1, 1),
+    ("Гамлет", 1600, 2, 2),
+    ("Пригоди Тома Сойєра", 1876, 3, 3);
+d)
+INSERT INTO librarymanagement.users (username, email)
+VALUES  
+    ("andriy_92", "andriy92@example.com"),
+    ("olena_k", "olena.k@example.com"),
+    ("sergiy.dev", "sergiy.dev@example.com");
+e)
+INSERT INTO librarymanagement.borrowed_books (book_id, user_id, borrow_date, return_date)
+VALUES  
+    (1, 1, '2024-02-01', '2024-02-15'), 
+    (2, 2, '2024-02-05', '2024-02-20'),
+    (3, 3, '2024-02-10', '2024-02-25'); 
+
+3. 
+SELECT *
+FROM mydb.order_details od
+INNER JOIN mydb.orders o ON od.order_id = o.id
+INNER JOIN mydb.customers c ON o.customer_id = c.id
+INNER JOIN mydb.products p ON od.product_id = p.id
+INNER JOIN mydb.categories cat ON p.category_id = cat.id
+INNER JOIN mydb.employees e ON o.employee_id = e.employee_id
+INNER JOIN mydb.shippers s ON o.shipper_id = s.id
+INNER JOIN mydb.suppliers sup ON p.supplier_id = sup.id;
+
+4. 
+a)
+SELECT COUNT(*)
+FROM mydb.order_details od
+INNER JOIN mydb.orders o ON od.order_id = o.id
+INNER JOIN mydb.customers c ON o.customer_id = c.id
+INNER JOIN mydb.products p ON od.product_id = p.id
+INNER JOIN mydb.categories cat ON p.category_id = cat.id
+INNER JOIN mydb.employees e ON o.employee_id = e.employee_id
+INNER JOIN mydb.shippers s ON o.shipper_id = s.id
+INNER JOIN mydb.suppliers sup ON p.supplier_id = sup.id;
+
+b) При заміні операторів INNER на LEFT чи RIGHT кількість строк не змінюється. Думаю, що це відбувається тому, що в усіх таблицях є 100% співпадіння для кожного з'єднання.
+
+с) 
+SELECT COUNT(*)
+FROM mydb.order_details od
+INNER JOIN mydb.orders o ON od.order_id = o.id
+INNER JOIN mydb.customers c ON o.customer_id = c.id
+INNER JOIN mydb.products p ON od.product_id = p.id
+INNER JOIN mydb.categories cat ON p.category_id = cat.id
+INNER JOIN mydb.employees e ON o.employee_id = e.employee_id
+INNER JOIN mydb.shippers s ON o.shipper_id = s.id
+INNER JOIN mydb.suppliers sup ON p.supplier_id = sup.id
+WHERE e.employee_id > 3 AND e.employee_id <=10;
+
+d) 
+SELECT cat.name, 
+    COUNT(*) AS row_count, 
+    AVG(od.quantity) AS avg_quantity
+FROM mydb.order_details od
+INNER JOIN mydb.orders o ON od.order_id = o.id
+INNER JOIN mydb.customers c ON o.customer_id = c.id
+INNER JOIN mydb.products p ON od.product_id = p.id
+INNER JOIN mydb.categories cat ON p.category_id = cat.id
+INNER JOIN mydb.employees e ON o.employee_id = e.employee_id
+INNER JOIN mydb.shippers s ON o.shipper_id = s.id
+INNER JOIN mydb.suppliers sup ON p.supplier_id = sup.id
+WHERE e.employee_id > 3 AND e.employee_id <=10
+GROUP BY cat.name;
+
+e) 
+SELECT cat.name, 
+    COUNT(*) AS row_count, 
+    AVG(od.quantity) AS avg_quantity
+FROM mydb.order_details od
+INNER JOIN mydb.orders o ON od.order_id = o.id
+INNER JOIN mydb.customers c ON o.customer_id = c.id
+INNER JOIN mydb.products p ON od.product_id = p.id
+INNER JOIN mydb.categories cat ON p.category_id = cat.id
+INNER JOIN mydb.employees e ON o.employee_id = e.employee_id
+INNER JOIN mydb.shippers s ON o.shipper_id = s.id
+INNER JOIN mydb.suppliers sup ON p.supplier_id = sup.id
+WHERE e.employee_id > 3 AND e.employee_id <=10 
+GROUP BY cat.name
+HAVING AVG(od.quantity)>21;
+
+f) 
+SELECT cat.name, 
+    COUNT(*) AS row_count, 
+    AVG(od.quantity) AS avg_quantity
+FROM mydb.order_details od
+INNER JOIN mydb.orders o ON od.order_id = o.id
+INNER JOIN mydb.customers c ON o.customer_id = c.id
+INNER JOIN mydb.products p ON od.product_id = p.id
+INNER JOIN mydb.categories cat ON p.category_id = cat.id
+INNER JOIN mydb.employees e ON o.employee_id = e.employee_id
+INNER JOIN mydb.shippers s ON o.shipper_id = s.id
+INNER JOIN mydb.suppliers sup ON p.supplier_id = sup.id
+WHERE e.employee_id > 3 AND e.employee_id <=10 
+GROUP BY cat.name
+HAVING AVG(od.quantity)>21
+ORDER BY row_count DESC;
+
+g)
+USE mydb;
+SELECT cat.name, 
+    COUNT(*) AS row_count, 
+    AVG(od.quantity) AS avg_quantity
+FROM order_details od
+INNER JOIN orders o ON od.order_id = o.id
+INNER JOIN customers c ON o.customer_id = c.id
+INNER JOIN products p ON od.product_id = p.id
+INNER JOIN categories cat ON p.category_id = cat.id
+INNER JOIN employees e ON o.employee_id = e.employee_id
+INNER JOIN shippers s ON o.shipper_id = s.id
+INNER JOIN suppliers sup ON p.supplier_id = sup.id
+WHERE e.employee_id > 3 AND e.employee_id <=10 
+GROUP BY cat.name
+HAVING AVG(od.quantity)>21
+ORDER BY row_count DESC
+LIMIT 4 OFFSET 1;
+
+
